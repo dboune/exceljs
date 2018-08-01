@@ -1,3 +1,7 @@
+# FORK
+
+This is a non-published fork of the ExcelJS project. It removes CSV functionality because it requires the unsafe-eval CSP. You probably do not want to use this code for anything.
+
 # ExcelJS
 
 [![Build Status](https://travis-ci.org/guyonroche/exceljs.svg?branch=master)](https://travis-ci.org/guyonroche/exceljs)

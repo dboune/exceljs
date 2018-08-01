@@ -17,7 +17,7 @@ var XLSX = require('./../xlsx/xlsx');
 //  Manage String table, Hyperlink table, etc.
 //  Manage scaffolding for contained objects to write to/read from
 
-var Workbook = module.exports = function() {
+var Workbook = module.exports = function () {
   this.created = new Date();
   this.modified = this.created;
   this.properties = {};
@@ -46,10 +46,10 @@ Workbook.prototype = {
     }
     return this._worksheets.length || 1;
   },
-  addWorksheet: function(name, options) {
+  addWorksheet: function addWorksheet(name, options) {
     var id = this.nextId;
     name = name || 'sheet' + id;
-    
+
     // if options is a color, call it tabColor (and signal deprecated message)
     if (options) {
       if (typeof options === 'string') {
@@ -57,7 +57,7 @@ Workbook.prototype = {
         console.trace('tabColor argument is now deprecated. Please use workbook.addWorksheet(name, {properties: { tabColor: { argb: "rbg value" } }');
         options = {
           properties: {
-            tabColor: {argb: options}
+            tabColor: { argb: options }
           }
         };
       } else if (options.argb || options.theme || options.indexed) {
@@ -71,7 +71,9 @@ Workbook.prototype = {
       }
     }
 
-    var lastOrderNo = this._worksheets.reduce((acc, ws) => ((ws && ws.orderNo) > acc ? ws.orderNo : acc), 0);
+    var lastOrderNo = this._worksheets.reduce(function (acc, ws) {
+      return (ws && ws.orderNo) > acc ? ws.orderNo : acc;
+    }, 0);
     var worksheetOptions = Object.assign({}, options, {
       id: id,
       name: name,
@@ -84,23 +86,25 @@ Workbook.prototype = {
     this._worksheets[id] = worksheet;
     return worksheet;
   },
-  removeWorksheetEx: function(worksheet) {
+  removeWorksheetEx: function removeWorksheetEx(worksheet) {
     delete this._worksheets[worksheet.id];
   },
-  removeWorksheet: function(id) {
+  removeWorksheet: function removeWorksheet(id) {
     var worksheet = this.getWorksheet(id);
     if (worksheet) {
       worksheet.destroy();
     }
   },
 
-  getWorksheet: function(id) {
+  getWorksheet: function getWorksheet(id) {
     if (id === undefined) {
-      return this._worksheets.find(function(worksheet) { return worksheet; });
+      return this._worksheets.find(function (worksheet) {
+        return worksheet;
+      });
     } else if (typeof id === 'number') {
       return this._worksheets[id];
     } else if (typeof id === 'string') {
-      return this._worksheets.find(function(worksheet) {
+      return this._worksheets.find(function (worksheet) {
         return worksheet && worksheet.name === id;
       });
     }
@@ -109,11 +113,13 @@ Workbook.prototype = {
 
   get worksheets() {
     // return a clone of _worksheets
-    return this._worksheets.slice(1).sort((a, b) => a.orderNo - b.orderNo).filter(Boolean);
+    return this._worksheets.slice(1).sort(function (a, b) {
+      return a.orderNo - b.orderNo;
+    }).filter(Boolean);
   },
 
-  eachSheet: function(iteratee) {
-    this.worksheets.forEach((sheet) => {
+  eachSheet: function eachSheet(iteratee) {
+    this.worksheets.forEach(function (sheet) {
       iteratee(sheet, sheet.id);
     });
   },
@@ -122,27 +128,22 @@ Workbook.prototype = {
     return this._definedNames;
   },
 
-  clearThemes: function() {
+  clearThemes: function clearThemes() {
     // Note: themes are not an exposed feature, meddle at your peril!
     this._themes = undefined;
   },
 
-  addImage: function(image) {
+  addImage: function addImage(image) {
     // TODO:  validation?
     var id = this.media.length;
-    this.media.push(
-      Object.assign(
-        {},
-        image,
-        { type: 'image' }
-      )
-    );
+    this.media.push(Object.assign({}, image, { type: 'image' }));
     return id;
   },
 
-  getImage(id) {
+  getImage: function getImage(id) {
     return this.media[id];
   },
+
 
   get model() {
     return {
@@ -152,8 +153,12 @@ Workbook.prototype = {
       created: this.created,
       modified: this.modified,
       properties: this.properties,
-      worksheets: this.worksheets.map(function(worksheet) { return worksheet.model; }),
-      sheets: this.worksheets.map(ws => ws.model).filter(Boolean),
+      worksheets: this.worksheets.map(function (worksheet) {
+        return worksheet.model;
+      }),
+      sheets: this.worksheets.map(function (ws) {
+        return ws.model;
+      }).filter(Boolean),
       definedNames: this._definedNames.model,
       views: this.views,
       company: this.company,
@@ -167,10 +172,12 @@ Workbook.prototype = {
       revision: this.revision,
       contentStatus: this.contentStatus,
       themes: this._themes,
-      media: this.media,
+      media: this.media
     };
   },
   set model(value) {
+    var _this = this;
+
     this.creator = value.creator;
     this.lastModifiedBy = value.lastModifiedBy;
     this.lastPrinted = value.lastPrinted;
@@ -189,15 +196,17 @@ Workbook.prototype = {
 
     this.properties = value.properties;
     this._worksheets = [];
-    value.worksheets.forEach(worksheetModel => {
+    value.worksheets.forEach(function (worksheetModel) {
       var id = worksheetModel.id;
       var name = worksheetModel.name;
-      var orderNo = value.sheets.findIndex(ws => ws.id === id);
-      var worksheet = this._worksheets[id] = new Worksheet({
+      var orderNo = value.sheets.findIndex(function (ws) {
+        return ws.id === id;
+      });
+      var worksheet = _this._worksheets[id] = new Worksheet({
         id: id,
         name: name,
-        orderNo,
-        workbook: this
+        orderNo: orderNo,
+        workbook: _this
       });
 
       worksheet.model = worksheetModel;
@@ -209,3 +218,4 @@ Workbook.prototype = {
     this.media = value.media || [];
   }
 };
+//# sourceMappingURL=workbook.js.map
